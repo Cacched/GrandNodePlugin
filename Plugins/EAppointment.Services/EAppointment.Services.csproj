@@ -1,0 +1,13 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Grand.Core\Grand.Core.csproj" />
+    <ProjectReference Include="..\..\Grand.Domain\Grand.Domain.csproj" />
+    <ProjectReference Include="..\EAppointment.Entites\EAppointment.Entites.csproj" />
+  </ItemGroup>
+
+</Project>

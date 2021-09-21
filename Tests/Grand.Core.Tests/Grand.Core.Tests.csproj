@@ -7,9 +7,11 @@
     <Company>UNIT-SOFT Sp. z o.o.</Company>
     <Authors>UNIT-SOFT Sp. z o.o.</Authors>
     <PackageProjectUrl>https://grandnode.com/</PackageProjectUrl>
+    <Platforms>AnyCPU;x86</Platforms>
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="MediatR" Version="9.0.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.8.3" />
     <PackageReference Include="Moq" Version="4.15.2" />
     <PackageReference Include="MSTest.TestAdapter" Version="2.1.2" />

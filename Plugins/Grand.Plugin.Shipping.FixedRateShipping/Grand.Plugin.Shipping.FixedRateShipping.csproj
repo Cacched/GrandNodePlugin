@@ -7,9 +7,15 @@
     <Company>UNIT-SOFT Sp. z o.o.</Company>
     <PackageProjectUrl>https://grandnode.com/</PackageProjectUrl>
     <TieredCompilation>true</TieredCompilation>
+    <Platforms>AnyCPU;x86</Platforms>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <OutputPath>..\..\Grand.Web\Plugins\Shipping.FixedRateShipping</OutputPath>
+    <OutDir>$(OutputPath)</OutDir>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x86'">
     <OutputPath>..\..\Grand.Web\Plugins\Shipping.FixedRateShipping</OutputPath>
     <OutDir>$(OutputPath)</OutDir>
   </PropertyGroup>
@@ -18,10 +24,19 @@
     <OutputPath>..\..\Grand.Web\Plugins\Shipping.FixedRateShipping</OutputPath>
     <OutDir>$(OutputPath)</OutDir>
   </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x86'">
+    <OutputPath>..\..\Grand.Web\Plugins\Shipping.FixedRateShipping</OutputPath>
+    <OutDir>$(OutputPath)</OutDir>
+  </PropertyGroup>
   
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
     <RemoveDir Directories="..\..\Grand.Web\Plugins\Shipping.FixedRateShipping\refs" />
   </Target>
+  
+  <ItemGroup>
+    <PackageReference Include="MediatR" Version="9.0.0" />
+  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\Grand.Domain\Grand.Domain.csproj">

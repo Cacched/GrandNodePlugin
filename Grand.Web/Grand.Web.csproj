@@ -10,6 +10,7 @@
     <ServerGarbageCollection>false</ServerGarbageCollection>
     <PreserveCompilationReferences>true</PreserveCompilationReferences>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+    <Platforms>AnyCPU;x86</Platforms>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\Grand.Domain\Grand.Domain.csproj" />
@@ -39,6 +40,7 @@
     <Compile Remove="Plugins\**" />
     <EmbeddedResource Remove="Plugins\**" />
     <None Remove="Plugins\**" />
+    <PackageReference Include="MediatR" Version="9.0.0" />
     <Content Update="Plugins\**">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

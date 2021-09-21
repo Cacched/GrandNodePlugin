@@ -21,6 +21,7 @@
 
   <ItemGroup>
     <PackageReference Include="Braintree" Version="5.2.0" />
+    <PackageReference Include="MediatR" Version="9.0.0" />
     <PackageReference Include="System.Xml.XPath.XmlDocument" Version="4.3.0" />
   </ItemGroup>
   

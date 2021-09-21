@@ -5,6 +5,7 @@
     <Company>UNIT-SOFT Sp. z o.o.</Company>
     <Authors>UNIT-SOFT Sp. z o.o.</Authors>
     <PackageProjectUrl>https://grandnode.com/</PackageProjectUrl>
+    <Platforms>AnyCPU;x86</Platforms>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -12,7 +13,17 @@
     <OutDir>$(OutputPath)</OutDir>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x86'">
+    <OutputPath>..\..\Grand.Web\Plugins\Widgets.Slider\</OutputPath>
+    <OutDir>$(OutputPath)</OutDir>
+  </PropertyGroup>
+
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <OutputPath>..\..\Grand.Web\Plugins\Widgets.Slider\</OutputPath>
+    <OutDir>$(OutputPath)</OutDir>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x86'">
     <OutputPath>..\..\Grand.Web\Plugins\Widgets.Slider\</OutputPath>
     <OutDir>$(OutputPath)</OutDir>
   </PropertyGroup>
@@ -25,6 +36,10 @@
     <EmbeddedResource Include="Views\**\*.cshtml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </EmbeddedResource>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="MediatR" Version="9.0.0" />
   </ItemGroup>
   <ItemGroup>
     <None Update="Content\**\*.*">

@@ -8,6 +8,8 @@
     <DockerServiceUrl>http://localhost:{ServicePort}</DockerServiceUrl>
     <DockerServiceName>grand.web</DockerServiceName>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x86'" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x86'" />
   <ItemGroup>
     <None Include=".dockerignore" />
     <None Include="docker-compose.override.yml">
