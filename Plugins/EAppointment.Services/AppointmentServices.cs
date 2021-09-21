@@ -1,4 +1,5 @@
 ﻿using EAppointment.Entites;
+using Grand.Domain;
 using Grand.Domain.Data;
 using MongoDB.Driver;
 using System;
@@ -26,6 +27,10 @@ namespace EAppointment.Services
         {
             return await _appointmentRepository.Table.ToListAsync();
         }
+        public  Task<List<EAppointmentBooking>> GetAppointmentByCustomerId(string CustomerId)
+        {
+            return _appointmentRepository.Collection.FindAsync(CustomerId).Result.ToListAsync();
+        }
 
         public string GetAppointmentStatus(string appointmentId)
         {
@@ -51,5 +56,52 @@ namespace EAppointment.Services
         {
             throw new NotImplementedException();
         }
+
+        public async Task<IPagedList<EAppointmentBooking>> GetAllAppointments(
+           string PatientsId = null,
+           DateTime? createdFromUtc = null,
+           DateTime? createdToUtc = null,
+           int pageIndex = 0,
+           int pageSize = int.MaxValue,
+           string Status = null,  string PatientsFullName = null, string phone = null, string AppointmentId = null)
+        {
+            #region Get enquiries
+
+            //enquiries
+            var builder = Builders<EAppointmentBooking>.Filter;
+            var filter = FilterDefinition<EAppointmentBooking>.Empty;
+            var filterSpecification = FilterDefinition<EAppointmentBooking>.Empty;
+
+            
+            //filtering
+            if (createdFromUtc.HasValue)
+            {
+                filter = filter & builder.Where(o => createdFromUtc.Value <= o.EntryDate);
+            }
+            if (!string.IsNullOrEmpty(AppointmentId))
+            {
+                filter = filter & builder.Where(o => o.AppointmentGuid.ToString() == AppointmentId);
+            }
+            if (createdToUtc.HasValue)
+            {
+                filter = filter & builder.Where(o => createdToUtc.Value.AddDays(1) >= o.EntryDate);
+            }
+
+            if (!string.IsNullOrWhiteSpace(PatientsId))
+            {
+                filter = filter & builder.Where(o => PatientsId == o.CustomerId);
+            }
+
+                       
+            var builderSort = Builders<EAppointmentBooking>.Sort.Descending(x => x.EntryDate);
+
+
+            var appointmentList = await PagedList<EAppointmentBooking>.Create(_appointmentRepository.Collection, filter, builderSort, pageIndex, pageSize);
+
+            return appointmentList;
+
+            #endregion
+        }
+
     }
 }

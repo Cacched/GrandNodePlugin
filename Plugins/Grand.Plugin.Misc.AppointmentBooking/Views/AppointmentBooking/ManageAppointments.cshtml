@@ -1,397 +1,399 @@
 ﻿@using Grand.Framework;
-@model Grand.Plugin.Misc.AppointmentBooking.Models.BookAppointmentDto
+@model Grand.Plugin.Misc.AppointmentBooking.DTOs.ListAppointmentsDto
 @inject Grand.Domain.Common.AdminAreaSettings adminAreaSettings
+   
+<!DOCTYPE html>
+<html>
+<head>
+    <link href="https://kendo.cdn.telerik.com/2021.3.914/styles/kendo.common.min.css" rel="stylesheet" />
+    <link href="https://kendo.cdn.telerik.com/2021.3.914/styles/kendo.default.min.css" rel="stylesheet" />
+    <script src="https://kendo.cdn.telerik.com/2021.3.914/js/jquery.min.js"></script>
+    <script src="https://kendo.cdn.telerik.com/2021.3.914/js/kendo.all.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/js/select2.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.min.js"></script>
+    @*<style>
+            .enquirynum {
+                background-color: greenyellow;
+            }
 
-@{ Layout = "_AdminLayout"; }
+            .k-block, .k-toolbar, .k-grouping-header, .k-pager-wrap, .k-draghandle, .k-treemap-tile, html .km-pane-wrapper .k-header {
+                background-color: #f5f6fa !important;
+            }
 
-<style>
-    .enquirynum {
-        background-color: greenyellow;
-    }
-
-    .k-block, .k-toolbar, .k-grouping-header, .k-pager-wrap, .k-draghandle, .k-treemap-tile, html .km-pane-wrapper .k-header {
-        background-color: #f5f6fa !important;
-    }
-
-    .k-dropdown {
-        border-radius: 4px !important;
-    }
-
-
-    a.k-button {
-        border-radius: 4px !important;
-        margin: 0 5px 5px 0 !important;
-    }
-
-        a.k-button:hover {
-            background-color: #fff !important;
-            color: #43425d;
-        }
-
-    a.k-grid-view {
-        background-color: #3f88c3 !important;
-        color: #fff;
-        padding: 5px 7px;
-        border-radius: 4px !important;
-        margin-right: 5px;
-    }
-
-    a.k-edit {
-        background-color: #1fbabc;
-        border-color: #1fbabc;
-        color: #fff;
-        border-radius: 5px;
-        padding: 5px 7px;
-    }
+            .k-dropdown {
+                border-radius: 4px !important;
+            }
 
 
+            a.k-button {
+                border-radius: 4px !important;
+                margin: 0 5px 5px 0 !important;
+            }
 
-    a.k-generate {
-        background-color: #2a3f54;
-        border-color: #2a3f54;
-        color: #fff;
-        padding: 5px 6px;
-        border-radius: 4px !important;
-    }
+                a.k-button:hover {
+                    background-color: #fff !important;
+                    color: #43425d;
+                }
 
-    a.k-regenerate {
-        background-color: #df6913;
-        border-color: #2a3f54;
-        color: #fff;
-        padding: 5px 6px;
-        border-radius: 4px !important;
-    }
+            a.k-grid-view {
+                background-color: #3f88c3 !important;
+                color: #fff;
+                padding: 5px 7px;
+                border-radius: 4px !important;
+                margin-right: 5px;
+            }
 
-    .view-btn {
-        display: inline-block;
-        margin: 5px 5px 0 0;
-    }
-
-    @@media(max-width:768px) {
-        .section-all {
-            padding: 0 !important;
-        }
-
-        .product-table td {
-            padding: 0px !important;
-            text-align: center;
-        }
-    }
-
-    .k-grid-header .k-header {
-        background: #2a3f54;
-        color: #fff !important;
-        vertical-align: middle !important;
-        padding-left: .6em !important;
-    }
-
-    .control-label {
-        line-height: 34px;
-    }
-
-    .k-tabstrip > .k-content {
-        display: block !important;
-    }
-
-    .rowcolor {
-        color: white;
-        background: #18B718;
-    }
-
-    .urgentrowcolor {
-        color: white;
-        background: #d9534f;
-    }
-
-    .rewardcolor {
-        background: #d9534f;
-        color: #fff;
-    }
-
-
-    .holdcolor {
-        background: #4c4c39;
-        color: #fff;
-    }
-
-    .blink {
-        width: 135px;
-        background-color: white;
-        margin-right: 3px;
-    }
-
-        .blink div {
-            font-size: 14px;
-            text-align: center;
-            height: 37px;
-            color: #FFF;
-            animation: blink 1s linear infinite;
-            background: #A80808;
-            padding: 5px;
-        }
-
-    .toolbar input {
-        background: red;
-        border: 0;
-        padding: 5px;
-        color: #FFF;
-        margin-right: 2px;
-    }
-
-    @@keyframes blink {
-        0% {
-            opacity: 0;
-        }
-
-        50% {
-            opacity: .5;
-        }
-
-        100% {
-            opacity: 1;
-        }
-    }
-</style>
-
-<form asp-controller="Enquiry" asp-action="List" method="post">
-    <div class="row section-all">
-        <div class="col-md-12">
-            <div class="x_panel  light form-fit">
-                <div class="x_title">
-                    <div class="caption">
-                        <i class="fa fa-exclamation-circle" aria-hidden="true"></i>
-                        Appointment List
-                    </div>
-
-                    <div class="actions btn-group btn-group-devided">
-                        <a class="btn green" href="@Html.Raw(Url.Action("BookAppointment", "AppointmentBooking" ))"><i class="fa fa-user-plus"></i> <span class="hidden-xs"> Add Appointment </span> </a>
-                    </div>
+            a.k-edit {
+                background-color: #1fbabc;
+                border-color: #1fbabc;
+                color: #fff;
+                border-radius: 5px;
+                padding: 5px 7px;
+            }
 
 
 
-                </div>
-                <div class="form-horizontal">
-                    <div class="form-body col-md-6 advanced-filter">
-                        <div class="form-group">
-                            <label class="col-xs-4 col-sm-4 col-md-4 control-label">Patients's FullName</label>
-                            <div class="col-xs-8 col-md-8 col-sm-8">
-                                <admin-input asp-for="FullName" />
-                            </div>
+            a.k-generate {
+                background-color: #2a3f54;
+                border-color: #2a3f54;
+                color: #fff;
+                padding: 5px 6px;
+                border-radius: 4px !important;
+            }
+
+            a.k-regenerate {
+                background-color: #df6913;
+                border-color: #2a3f54;
+                color: #fff;
+                padding: 5px 6px;
+                border-radius: 4px !important;
+            }
+
+            .view-btn {
+                display: inline-block;
+                margin: 5px 5px 0 0;
+            }
+
+            @@media(max-width:768px) {
+                .section-all {
+                    padding: 0 !important;
+                }
+
+                .product-table td {
+                    padding: 0px !important;
+                    text-align: center;
+                }
+            }
+
+            .k-grid-header .k-header {
+                background: #2a3f54;
+                color: #fff !important;
+                vertical-align: middle !important;
+                padding-left: .6em !important;
+            }
+
+            .control-label {
+                line-height: 34px;
+            }
+
+            .k-tabstrip > .k-content {
+                display: block !important;
+            }
+
+            .rowcolor {
+                color: white;
+                background: #18B718;
+            }
+
+            .urgentrowcolor {
+                color: white;
+                background: #d9534f;
+            }
+
+            .rewardcolor {
+                background: #d9534f;
+                color: #fff;
+            }
+
+
+            .holdcolor {
+                background: #4c4c39;
+                color: #fff;
+            }
+
+            .blink {
+                width: 135px;
+                background-color: white;
+                margin-right: 3px;
+            }
+
+                .blink div {
+                    font-size: 14px;
+                    text-align: center;
+                    height: 37px;
+                    color: #FFF;
+                    animation: blink 1s linear infinite;
+                    background: #A80808;
+                    padding: 5px;
+                }
+
+            .toolbar input {
+                background: red;
+                border: 0;
+                padding: 5px;
+                color: #FFF;
+                margin-right: 2px;
+            }
+
+            @@keyframes blink {
+                0% {
+                    opacity: 0;
+                }
+
+                50% {
+                    opacity: .5;
+                }
+
+                100% {
+                    opacity: 1;
+                }
+            }
+        </style>*@
+</head>
+<body>
+    <form asp-controller="Enquiry" asp-action="List" method="post">
+        <div class="row section-all">
+            <div class="col-md-12">
+                <div class="x_panel  light form-fit">
+                    <div class="x_title">
+                        <div class="caption">
+                            <i class="fa fa-exclamation-circle" aria-hidden="true"></i>
+                            Appointment List
                         </div>
 
-                    </div>
+                        <div class="actions btn-group btn-group-devided">
+                            <a class="btn green" href="@Html.Raw(Url.Action("BookAppointment", "AppointmentBooking" ))"><i class="fa fa-user-plus"></i> <span class="hidden-xs"> Add Appointment </span> </a>
+                        </div>
 
-                    <div class="form-body col-md-4 advanced-filter">
-                        <div class="form-group">
-                            <div class="row">
-                                <div class="col-xs-12 col-md-12 col-sm-12">
-                                    <button class="btn btn-success filter-submit" id="search-appointments">
-                                        <i class="fa fa-search"></i> 
-                                    </button>
-                                    <button type="button" class="btn btn-default filter-extend-button">
-                                        <i class="fa fa-filter"></i>
-                                    </button>
+
+
+                    </div>
+                    <div class="form-horizontal">
+                        <div class="form-body col-md-6 advanced-filter">
+                            <div class="form-group">
+                                <label class="col-xs-4 col-sm-4 col-md-4 control-label">Patients's FullName</label>
+                                <div class="col-xs-8 col-md-8 col-sm-8">
+                                    <admin-input asp-for="FullName" />
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <div class="form-body col-md-4 advanced-filter">
+                            <div class="form-group">
+                                <div class="row">
+                                    <div class="col-xs-12 col-md-12 col-sm-12">
+                                        <button class="btn btn-success filter-submit" id="search-appointments">
+                                            <i class="fa fa-search"></i>
+                                        </button>
+                                        <button type="button" class="btn btn-default filter-extend-button">
+                                            <i class="fa fa-filter"></i>
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="clearfix"></div>
-                    <div class="form-body col-md-6 extend-collapse">
-                        <div class="form-group">
-                            <admin-label asp-for="StartDate" class="col-xs-4 col-sm-4 col-md-4 control-label" />
-                            <div class="col-xs-8 col-md-8 col-sm-8">
-                                <admin-input asp-for="StartDate" />
+                        <div class="clearfix"></div>
+                        <div class="form-body col-md-6 extend-collapse">
+                            <div class="form-group">
+                                <admin-label asp-for="StartDate" class="col-xs-4 col-sm-4 col-md-4 control-label" />
+                                <div class="col-xs-8 col-md-8 col-sm-8">
+                                    <admin-input asp-for="StartDate" />
+                                </div>
                             </div>
-                        </div>
-                        <div class="form-group">
-                            <admin-label asp-for="EndDate" class="col-xs-4 col-sm-4 col-md-4 control-label" />
-                            <div class="col-xs-8 col-md-8 col-sm-8">
-                                <admin-input asp-for="EndDate" />
+                            <div class="form-group">
+                                <admin-label asp-for="EndDate" class="col-xs-4 col-sm-4 col-md-4 control-label" />
+                                <div class="col-xs-8 col-md-8 col-sm-8">
+                                    <admin-input asp-for="EndDate" />
+                                </div>
                             </div>
-                        </div>
 
-                        <div class="form-group">
-                            <label class="col-xs-4 col-sm-4 col-md-4 control-label">Appointment Number</label>
-                            <div class="col-xs-8 col-md-8 col-sm-8">
-                                <admin-input asp-for="AppointmentNumber" />
+                            <div class="form-group">
+                                <label class="col-xs-4 col-sm-4 col-md-4 control-label">Appointment Number</label>
+                                <div class="col-xs-8 col-md-8 col-sm-8">
+                                    <admin-input asp-for="AppointmentNumber" />
+                                </div>
                             </div>
-                        </div>
 
+                        </div>
                     </div>
-                </div>
-                <div class=" x_content portlet-body form mt-3">
-                    <div class="k-grid k-widget" id="appointments-grid">
+                    <div class=" x_content portlet-body form mt-3">
+                        <div class="k-grid k-widget" id="appointments-grid">
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-</form>
+    </form>
+    
+    <script type="text/javascript">
 
-
-<script type="text/javascript">
-    $(document).ready(function () {
-        $('.extend-collapse').hide();
-        $('.filter-text-open').hide();
-        $('.filter-extend-button').click(function () {
-            $('.extend-collapse').toggle("slow");
-            $('.filter-text-open').toggle();
-            $('.filter-text-close').toggle();
-        });
-
-        $("#appointments-grid").kendoGrid({
-            dataSource: {
-                transport: {
-                    read: {
-                        url: "@Html.Raw(Url.Action("AppointmentList", "BookAppointment"))",
-                        type: "POST",
-                        dataType: "json",
-                        data: additionalData
-
-                    },
-
-                },
-                schema: {
-                    data: "Data",
-                    total: "Total",
-                    errors: "Errors",
-                    model: {
-                        id: "Id",
-                    }
-                },
-                error: function (e) {
-                    display_kendoui_grid_error(e);
-                    // Cancel the changes
-                    this.cancelChanges();
-                },
-                pageSize: @(adminAreaSettings.DefaultGridPageSize),
-        serverPaging: true,
-            serverFiltering: true,
-                serverSorting: true,
-                    requestStart: function () {
-                        kendo.ui.progress($('#appointments-grid'), true);
-                    },
-        requestEnd: function () {
-            kendo.ui.progress($('#appointments-grid'), false);
-
-        },
-    },
-        pageable: {
-        refresh: true,
-        pageSizes: [@(adminAreaSettings.GridPageSizes)]
-
-
-                },
-    editable: {
-        confirmation: true,
-            mode: "inline"
-    },
-    scrollable: false,
-        columns: [
-            {
-                field: "AppointmentNumber",
-                title: "Appointment Number",
-                template: "<a href='/Admin/BookAppointment/Edit/#:Id #'>#=AppointmentNumber#  </a>",
-                width: 80
-            },
-            {
-                field: "DoctorName",
-                title: "Doctor Name",
-                width: 150
-            },
-            {
-                field: "PatientName",
-                title: "Patient Name",
-                template: "<a href='/Admin/BookAppointment/Edit/#:Id #'>#=PatientName#  </a>",
-                width: 150,
-            },
-            {
-                field: "BookedDate",
-                title: "Booked Date",
-                width: 100
-            },
-            {
-                field: "BookedTime",
-                title: "Booked Time",
-                width: 100
-            },
-            {
-                field: "CreatedDate",
-                title: "Created Date",
-                width: 100,
-                template: "#= kendo.toString(kendo.parseDate(CreatedDate, 'yyyy-MM-dd'), 'MM/dd/yyyy') #"
-            },
-            {
-                field: "Source",
-                title: "Source",
-                width: 90,
-
-            },
-            {
-                field: "Status",
-                title: "Status",
-                width: 90,
-
-            },
-
-            {
-                field: "Payment",
-                title: "Payment Source",
-                width: 90,
-
-            },
-
-
-        ]
+        $(document).ready(function () {
+            $('.extend-collapse').hide();
+            $('.filter-text-open').hide();
+            $('.filter-extend-button').click(function () {
+                $('.extend-collapse').toggle("slow");
+                $('.filter-text-open').toggle();
+                $('.filter-text-close').toggle();
             });
 
+            $("#appointments-grid").kendoGrid({
+                dataSource: {
+                    transport: {
+                        read: {
+                            url: "@Html.Raw(Url.Action("AppointmentList", "AppointmentBooking"))",
+                            type: "POST",
+                            dataType: "json",
+                            data: additionalData()
 
-    //search button
-    $('#search-appointments').click(function () {
-        //search
-        var grid = $('#appointments-grid').data('kendoGrid');
-        grid.dataSource.page(1); //new search. Set page size to 1
-        //grid.dataSource.read(); we already loaded the grid above using "page" function
-        return false;
-    });
+                        },
 
-    $("#@Html.FieldIdFor(model => model.Status)").keydown(function (event) {
-        if (event.keyCode == 13) {
-            $("#search-appointments").click();
+                    },
+                    schema: {
+                        data: 'Data',
+                        total: 'Total',
+                    },
+                    error: function (e) {
+                        display_kendoui_grid_error(e);
+                        // Cancel the changes
+                        this.cancelChanges();
+                    },
+                    pageSize: @(adminAreaSettings.DefaultGridPageSize),
+            serverPaging: true,
+                serverFiltering: true,
+                    serverSorting: true,
+                        requestStart: function () {
+                            kendo.ui.progress($('#appointments-grid'), true);
+                        },
+            requestEnd: function () {
+                kendo.ui.progress($('#appointments-grid'), false);
+
+            },
+        },
+            pageable: {
+            refresh: true,
+            pageSizes: [@(adminAreaSettings.GridPageSizes)]
+
+
+                    },
+        editable: {
+            confirmation: true,
+                mode: "inline"
+        },
+        scrollable: false,
+            columns: [
+                {
+                    field: "AppointmentId",
+                    title: "Appointment Number",
+                    //template: "<a href='/Admin/BookAppointment/Edit/#:Id #'>#=AppointmentId#  </a>",
+                    width: 80
+                },
+                {
+                    field: "CustomerName",
+                    title: "Patient Name",
+                    //template: "<a href='/Admin/BookAppointment/Edit/#:Id #'>#=PatientName#  </a>",
+                    width: 100,
+                },
+                {
+                    field: "VaccineName",
+                    title: "Vaccine",
+                    width: 100
+                },
+                {
+                    field: "AppointmentDate",
+                    title: "Appointment Date",
+                    template: "#= kendo.toString(kendo.parseDate(AppointmentDate, 'yyyy-MM-dd'), 'MM/dd/yyyy') #",
+                    width: 80,
+                },
+                {
+                    field: "EntryDate",
+                    title: "Entry Date",
+                    width: 80,
+                    template: "#= kendo.toString(kendo.parseDate(EntryDate, 'yyyy-MM-dd'), 'MM/dd/yyyy') #"
+                },
+                {
+                    field: "Status",
+                    title: "Status",
+                    width: 70,
+
+                },
+                {
+                    command: [
+                        //define the commands here
+                        { name: "edit", text: "Edit" },
+                        { name: "destroy", text: "Delete" },
+                    ],
+                    title: "Actions",
+                    width:70,
+                } // displays the built-in "destroy" command
+
+                    
+            ]
+                });
+
+
+        //search button
+        $('#search-appointments').click(function () {
+            //search
+            var grid = $('#appointments-grid').data('kendoGrid');
+            grid.dataSource.page(1); //new search. Set page size to 1
+            //grid.dataSource.read(); we already loaded the grid above using "page" function
             return false;
-        }
-    });
+        });
+
+
+        @*$("#@Html.FieldIdFor(model => model.Status)").keydown(function (event) {
+            if (event.keyCode == 13) {
+                $("#search-appointments").click();
+                return false;
+            }
+        });*@
 
 
     $("#@Html.FieldIdFor(model => model.CustomerName)").keydown(function (event) {
-        if (event.keyCode == 13) {
-            $("#search-appointments").click();
-            return false;
-        }
+    if (event.keyCode == 13) {
+    $("#search-appointments").click();
+    return false;
+    }
     });
 
     $("#@Html.FieldIdFor(model => model.AppointmentId)").keydown(function (event) {
-        if (event.keyCode == 13) {
-            $("#search-appointments").click();
-            return false;
-        }
+    if (event.keyCode == 13) {
+    $("#search-appointments").click();
+    return false;
+    }
     });
 
     function additionalData() {
-        var data = {
-            Status: $('#@Html.FieldIdFor(model => model.Status)').val(),
-            FullName: $('#@Html.FieldIdFor(model => model.CustomerName)').val(),
-            AppointmentNumber: $('#@Html.FieldIdFor(model => model.AppointmentId)').val(),
-            
+    var data = {
+    //Status: $('#@Html.FieldIdFor(model => model.Status)').val(),
+    FullName: $('#@Html.FieldIdFor(model => model.CustomerName)').val(),
+    AppointmentNumber: $('#@Html.FieldIdFor(model => model.AppointmentId)').val(),
 
 
 
 
-        };
-        return data;
+    };
+    return data;
     }
 
     });
 
 
-</script>
+    </script>
+</body>
+</html>
+
+
+

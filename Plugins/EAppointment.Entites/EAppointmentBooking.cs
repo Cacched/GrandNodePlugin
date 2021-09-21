@@ -58,7 +58,7 @@ namespace EAppointment.Entites
         Received,
         Processing,
         Confirmed,
-        Completed
+        Completed   
     }
 
 }

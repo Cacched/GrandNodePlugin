@@ -17,9 +17,9 @@ namespace Grand.Plugin.Misc.AppointmentBooking
             routeBuilder.MapControllerRoute("Plugin.Misc.AppointmentBooking.BookAppointment",
               $"{pattern}/book-appointment",
               new { controller = "AppointmentBooking", action = "BookAppointment" });
-            routeBuilder.MapControllerRoute("Plugin.Misc.AppointmentBooking.AppointmentList",
+            routeBuilder.MapControllerRoute("Plugin.Misc.AppointmentBooking.ViewAppointments",
               $"{pattern}/show-appointment",
-              new { controller = "AppointmentBooking", action = "AppointmentList" });
+              new { controller = "AppointmentBooking", action = "ViewAppointments" });
         }
 
         public int Priority {
