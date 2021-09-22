@@ -2,6 +2,7 @@
 using Grand.Core.DependencyInjection;
 using Grand.Core.TypeFinders;
 using Grand.Plugin.Misc.AppointmentManager;
+using Grand.Plugin.Misc.AppointmentManager.ViewModelServices;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Grand.Plugin.Misc.AppointmentBooking
@@ -11,6 +12,7 @@ namespace Grand.Plugin.Misc.AppointmentBooking
         public virtual void Register(IServiceCollection serviceCollection, ITypeFinder typeFinder, GrandConfig config)
         {
             serviceCollection.AddScoped<AppointmentManagerPlugin>();
+            serviceCollection.AddScoped<ICustomerAppointmentsDtoService, CustomerAppointmentsDtoService>();
         }
 
         public int Order {

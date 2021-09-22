@@ -22,7 +22,7 @@ namespace EAppointment.Services
            DateTime? createdToUtc = null,
            int pageIndex = 0,
            int pageSize = int.MaxValue,
-           string Status = null, string PatientsFullName = null, string phone = null, string AppointmentId = null);
+           int Status = 0, string PatientsFullName = null, string phone = null, string AppointmentId = null);
 
     }
 }

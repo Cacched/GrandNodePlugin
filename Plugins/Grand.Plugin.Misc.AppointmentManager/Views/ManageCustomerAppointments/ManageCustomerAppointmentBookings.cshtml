@@ -1,0 +1,412 @@
+﻿@model Grand.Plugin.Misc.AppointmentManager.DTO.CustomerBookedAppointmentsDto
+@inject Grand.Domain.Common.AdminAreaSettings adminAreaSettings
+@using Grand.Web.Areas.Admin.Extensions
+@using Grand.Framework
+@using Grand.Framework.Extensions
+@using Grand.Framework.Mvc.Razor
+@using Grand.Framework.TagHelpers.Admin
+@{
+    //page title
+    ViewBag.Title = "Customer Booked Appointments";
+    Layout = Constants.Layout_Admin;
+}
+
+<form asp-area="@Constants.AreaAdmin" asp-controller="ManageCustomerAppointments" asp-action="List" method="post">
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="x_panel light form-fit">
+                <div class="x_title">
+                    <div class="caption">
+                        <i class="fa fa-users"></i>
+                        Customer Appointments
+                    </div>
+                    <div class="actions btn-group btn-group-devided">
+                        <a href="@Url.Action(" Create")" class="btn green"><i class="fa fa-plus"></i><span class="d-none d-sm-inline"> Add New Appointment</span></a>
+
+                        <div class="btn-group btn-group-devided">
+                            <a class="btn default" href="javascript:;" data-toggle="dropdown" data-hover="dropdown" data-close-others="true">
+                                <i class="fa fa-download"></i>
+                                Export
+                                <i class="fa fa-angle-down"></i>
+                            </a>
+                            <ul class="dropdown-menu pull-right">
+                                <li>
+                                    <input type="submit" name="exportxml-all" class="btn default" style="width: 100%;" value="All" />
+                                </li>
+                                <li>
+                                    <input type="button" id="exportxml-selected" class="btn default" style="width: 100%;" value="Selected" />
+                                </li>
+                            </ul>
+                            <vc:admin-widget widget-zone="customer_list_buttons" additional-data="null" />
+                        </div>
+                        <button type="button" name="delete-selected" id="delete-selected" class="btn red" onclick=" return confirm('AreYouSure'); ">
+                            <i class="fa fa-trash-o"></i>
+                            Delete
+                        </button>
+                    </div>
+                </div>
+                <div class="x_content form">
+                    <div class="form-horizontal">
+
+                        <div class="form-body">
+                            <div class="form-group popup">
+                                <label class="col-2 control-label col-sm-2">Customer Name</label>
+                                <div class="col-10 col-md-4 col-sm-4">
+                                    <input asp-for="SearchCustomerName" />
+                                </div>
+                                <div class="col-8 col-md-6 col-sm-4 mt-mobile-10">
+                                    <div class="btn-group btn-group-devided">
+                                        <button class="btn btn-success filter-submit" id="search-customers">
+                                            <i class="fa fa-search"></i> Search
+                                        </button>
+                                        <button type="button" class="btn btn-default filter-extend-button">
+                                            <i class="fa fa-filter"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-body col-md-6 extend-collapse">
+                            <div class="form-group">
+                                <label asp-for="SearchCustomerId" class="control-label col-4 col-md-4 col-sm-4">Customer Id</label>
+                                <div class="col-8 col-md-8 col-sm-8">
+                                    <input asp-for="SearchCustomerId" />
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-4 col-md-4 col-sm-4">Vaccine Name</label>
+                                <div class="col-8 col-md-8 col-sm-8">
+                                    <input asp-for="SearchVaccineName" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-body col-md-6 extend-collapse">
+                            <div class="form-group">
+                                <label asp-for="AvailableAppointmentStatuses" class="control-label col-4 col-md-4 col-sm-4">Appointment Status</label>
+                                <div class="col-8 col-md-8 col-sm-8">
+                                    <input asp-for="AvailableAppointmentStatuses" asp-selectitem="Model.AvailableAppointmentStatuses" />
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label asp-for="SearchAppointmentId" class="control-label col-4 col-md-4 col-sm-4">Appointment Id</label>
+                                <div class="col-8 col-md-8 col-sm-8">
+                                    <input asp-for="SearchAppointmentId" />
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+                <div class="x_content">
+                    <div id="customerappointments-grid"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            $('.extend-collapse').hide();
+            $('.filter-extend-button').click(function () {
+                $('.extend-collapse').toggle("slow");
+                $('.filter-text-close').toggle();
+            });
+
+            $("#customerappointments-grid").kendoGrid({
+                    dataSource: {
+                        transport: {
+                            read: {
+                                url: "@Html.Raw(Url.Action("CustomerAppointmentsList", "ManageCustomerAppointments"))",
+                                type: "POST",
+                                dataType: "json",
+                                data: additionalData
+                            },
+                            update: {
+                                headers: {
+                                    'Accept': 'application/json',
+                                    'Content-Type': 'application/json; charset=utf-8'
+                                },
+                                url: "@Html.Raw(Url.Action("EditAppointment", "AppointmentBooking"))",
+                                type: "PUT",
+                                dataType: "json",
+                            },
+                        },
+                        schema: {
+                            data: "Data",
+                            total: "Total",
+                            //errors: "Errors"
+                            //model: {
+                            //    id: "SearchAppointmentId",
+                            //    fields: {
+                            //        SearchAppointmentId: { editable: false, nullable: false },
+                            //        SearchCustomerId: { editable: false, nullable: false },
+                            //        SearchCustomerName: { editable:true,validation: { required: true } },
+                            //        SearchVaccineName: { type: "text", editable: false },
+                            //        SearchVaccineId: { type: "text", editable: false },
+
+                            //        Status: { type: "text", validation: { required: true }, editable: false },
+                            //    },
+                            //},
+                        },
+                        error: function(e) {
+                            display_kendoui_grid_error(e);
+                            // Cancel the changes
+                            this.cancelChanges();
+                        },
+                        pageSize: @(adminAreaSettings.DefaultGridPageSize),
+                        serverPaging: true,
+                        serverFiltering: true,
+                        serverSorting: true
+                    },
+                    pageable: {
+                        refresh: true,
+                        pageSizes: [@(adminAreaSettings.GridPageSizes)]
+                    },
+                    editable: {
+                        confirmation: true,
+                        mode: "inline"
+                    },
+                    scrollable: false,
+                    dataBound: onDataBound,
+                    columns: [
+                        {
+                            field: "SearchAppointmentId",
+                            headerTemplate: "<label class='mt-checkbox mt-checkbox-outline control control-checkbox '><input id='mastercheckbox' type='checkbox'/><div class='control__indicator control__indicator_customers mt-top'></div></label>",
+                            headerAttributes: { style: "text-align:center" },
+                            attributes: { style: "text-align:center" },
+                            template: "<label class='mt-checkbox mt-checkbox-outline control control-checkbox mt-NoMargin'><input type='checkbox' value='#=SearchAppointmentId#' class='checkboxGroups'/><div class='control__indicator control__indicator_customers mt-NoMargin'></div></label>",
+                            width: 40
+                        },
+
+                        {
+                            field: "SearchCustomerName",
+                            title: "Customer Name",
+                            width: 200,
+                        },
+                        {
+                            field: "SearchVaccineName",
+                            title: "Vaccine",
+                            width: 200
+                        },
+                        {
+                            command: [
+                                //define the commands here
+                                { name: "edit", text: "Edit" },
+                            ],
+                            title: "Edit Customer Appointment",
+                            width: 70,
+                        },
+
+                        //{
+                        //    field: "AvailableAppointmentStatuses",
+                        //    title: "Appointment Status",
+                        //    width: "180px",
+                        //    editor: categoryDropDownEditor, template: "#=Category.CategoryName#"
+                        //}
+                    ]
+            });
+
+            //function categoryDropDownEditor(container, options) {
+            //    $('<input required name="' + options.field + '"/>')
+            //        .appendTo(container)
+            //        .kendoDropDownList({
+            //            autoBind: false,
+            //            dataTextField: "CategoryName",
+            //            dataValueField: "CategoryID",
+            //            dataSource: {
+            //                type: "odata",
+            //                transport: {
+            //                    read: "https://demos.telerik.com/kendo-ui/service/Northwind.svc/Categories"
+            //                }
+            //            }
+            //        });
+            //};
+        });
+
+    </script>
+
+    <script type="text/javascript">
+
+            var selectedIds = [];
+
+            $(document).ready(function () {
+
+                //search button
+                $('#search-customers').click(function () {
+                    var grid = $('#customerappointments-grid').data('kendoGrid');
+                    grid.dataSource.page(1); //new search. Set page size to 1
+                    //grid.dataSource.read(); we already loaded the grid above using "page" function
+                    //clear selected checkboxes
+                    $('.checkboxGroups').prop('checked', false).change();
+                    selectedIds = [];
+                    return false;
+                });
+                @*$("#@Html.FieldIdFor(model => model.AvailableAppointmentStatuses)").keydown(function (event) {
+                    if (event.keyCode == 13) {
+                        $("#search-customers").click();
+                        return false;
+                    }
+                });*@
+
+
+                $("#@Html.FieldIdFor(model => model.SearchCustomerName)").keydown(function (event) {
+                    if (event.keyCode == 13) {
+                        $("#search-customers").click();
+                        return false;
+                    }
+                });
+                $("#@Html.FieldIdFor(model => model.SearchAppointmentId)").keydown(function (event) {
+                    if (event.keyCode == 13) {
+                        $("#search-customers").click();
+                        return false;
+                    }
+                });
+                $("#@Html.FieldIdFor(model => model.SearchCustomerId)").keydown(function (event) {
+                    if (event.keyCode == 13) {
+                        $("#search-customers").click();
+                        return false;
+                    }
+                });
+                $("#@Html.FieldIdFor(model => model.SearchVaccineId)").keydown(function (event) {
+                    if (event.keyCode == 13) {
+                        $("#search-customers").click();
+                        return false;
+                    }
+                });
+                $("#@Html.FieldIdFor(model => model.SearchVaccineName)").keydown(function (event) {
+                    if (event.keyCode == 13) {
+                        $("#search-customers").click();
+                        return false;
+                    }
+                });
+                //delete selected
+                $('#delete-selected').click(function(e) {
+
+                    e.preventDefault();
+
+                    var postData = {
+                        selectedIds: selectedIds
+                    };
+                    addAntiForgeryToken(postData);
+
+                    $.ajax({
+                        cache: false,
+                        type: "POST",
+                        url: "@(Url.Action("DeleteSelected", "Customer"))",
+                        data: postData,
+                        complete: function(data) {
+                            //reload grid
+                            var grid = $('#customerappointments-grid').data('kendoGrid');
+                            grid.dataSource.read();
+                        },
+                        error: function(xhr, ajaxOptions, thrownError) {
+                            alert(thrownError);
+                        },
+                        traditional: true
+                    });
+                    return false;
+                });
+
+                $('#mastercheckbox').click(function () {
+                    $('.checkboxGroups').prop('checked', $(this).is(':checked')).change();
+                });
+
+                //wire up checkboxes.
+                $('#customers-grid').on('change', 'input[type=checkbox][id!=mastercheckbox]', function (e) {
+                    var $check = $(this);
+                    if ($check.is(":checked") == true) {
+                        var checked = jQuery.inArray($check.val(), selectedIds);
+                        if (checked == -1) {
+                            //add id to selectedIds.
+                            selectedIds.push($check.val());
+                        }
+                    }
+                    else {
+                        var checked = jQuery.inArray($check.val(), selectedIds);
+                        if (checked > -1) {
+                            //remove id from selectedIds.
+                            selectedIds = $.grep(selectedIds, function (item, index) {
+                                return item != $check.val();
+                            });
+                        }
+                    }
+                    updateMasterCheckbox();
+                });
+            });
+
+            function onDataBound(e) {
+
+                $('#customers-grid input[type=checkbox][id!=mastercheckbox]').each(function () {
+                    var currentId = $(this).val();
+                    var checked = jQuery.inArray(currentId, selectedIds);
+                    //set checked based on if current checkbox's value is in selectedIds.
+                    $(this).prop('checked', checked > -1);
+                });
+
+                updateMasterCheckbox();
+            }
+
+            function updateMasterCheckbox() {
+                var numChkBoxes = $('#customers-grid input[type=checkbox][id!=mastercheckbox]').length;
+                var numChkBoxesChecked = $('#customers-grid input[type=checkbox][id!=mastercheckbox]:checked').length;
+                $('#mastercheckbox').prop('checked', numChkBoxes == numChkBoxesChecked && numChkBoxes > 0);
+            }
+
+            function additionalData() {
+                var data = {
+                    SearchCustomerName: $('#@Html.FieldIdFor(model => Model.SearchCustomerName)').val(),
+                    SearchCustomerId: $('#@Html.FieldIdFor(model => model.SearchCustomerId)').val(),
+                    SearchAppointmentId: $('#@Html.FieldIdFor(model => model.SearchAppointmentId)').val(),
+                    SearchVaccineId: $('#@Html.FieldIdFor(model => model.SearchVaccineId)').val(),
+                    SearchVaccineName: $('#@Html.FieldIdFor(model => model.SearchVaccineName)').val(),
+                };
+                console.log(data);
+                addAntiForgeryToken(data);
+                return data;
+            }
+    </script>
+</form>
+
+@*export selected (XML). We don't use GET approach because it's limited to 2K-4K chars and won't work for large number of entities*@
+<form asp-area="@Constants.AreaAdmin" asp-controller="Customer" asp-action="ExportXmlSelected" method="post" id="export-xml-selected-form">
+
+    <input type="hidden" id="selectedIds" name="selectedIds" value="" />
+</form>
+
+<script>
+    $(document).ready(function () {
+        $('#exportxml-selected').click(function (e) {
+            e.preventDefault();
+            var ids = selectedIds.join(",");
+            $('#export-xml-selected-form #selectedIds').val(ids);
+            $('#export-xml-selected-form').submit();
+            return false;
+        });
+    });
+
+</script>
+
+@*export selected (Excel). We don't use GET approach because it's limited to 2K-4K chars and won't work for large number of entities*@
+<form asp-area="@Constants.AreaAdmin" asp-controller="Customer" asp-action="ExportExcelSelected" method="post" id="export-excel-selected-form">
+
+    <input type="hidden" id="selectedIds" name="selectedIds" value="" />
+</form>
+
+<script>
+
+    $(document).ready(function () {
+        $('#exportexcel-selected').click(function (e) {
+            e.preventDefault();
+            var ids = selectedIds.join(",");
+            $('#export-excel-selected-form #selectedIds').val(ids);
+            $('#export-excel-selected-form').submit();
+            return false;
+        });
+    });
+
+</script>
+

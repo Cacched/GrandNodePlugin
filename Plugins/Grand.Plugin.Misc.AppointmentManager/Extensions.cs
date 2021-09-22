@@ -1,19 +1,19 @@
 ﻿using EAppointment.Entites;
 using Grand.Core.Mapper;
-using Grand.Plugin.Misc.AppointmentBooking.Models;
+using Grand.Plugin.Misc.AppointmentManager.DTO;
 
-namespace Grand.Plugin.Misc.AppointmentBooking
+namespace Grand.Plugin.Misc.AppointmentManager
 {
     public static class Extensions
     {
-        public static BookAppointmentDto ToModel(this EAppointmentBooking entity)
+        public static CustomerBookedAppointmentsDto ToModel(this EAppointmentBooking entity)
         {
-            return entity.MapTo<EAppointmentBooking, BookAppointmentDto>();
+            return entity.MapTo<EAppointmentBooking, CustomerBookedAppointmentsDto>();
         }
 
-        public static EAppointmentBooking ToEntity(this BookAppointmentDto model)
+        public static EAppointmentBooking ToEntity(this CustomerBookedAppointmentsDto model)
         {
-            return model.MapTo<BookAppointmentDto, EAppointmentBooking>();
+            return model.MapTo<CustomerBookedAppointmentsDto, EAppointmentBooking>();
         }
 
     }

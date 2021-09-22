@@ -24,20 +24,17 @@ namespace Grand.Plugin.Misc.AppointmentManager
                     ResourceName = "Appointment Manager",
                     Visible = true,
                     IconClass = "icon-puzzle",
-                    
+
                 });
 
                 pluginNode = rootNode.ChildNodes.FirstOrDefault(x => x.SystemName == "Misc.AppointmentManagement");
             }
             var Menu = new SiteMapNode();
             Menu.Visible = true;
-            Menu.ResourceName = "List Apointments";
+            Menu.ResourceName = "Manage Apointments";
             Menu.SystemName = "ConfigureAppointments";
-            Menu.ChildNodes.Add(new SiteMapNode() {
-                SystemName = "Misc.AppointmentManagement",
-                ResourceName = "View",
-                Visible = true,
-            });
+            Menu.ControllerName = "ManageCustomerAppointments";
+            Menu.ActionName = "ViewCustomerAppointments";
             if (pluginNode != null)
                 pluginNode.ChildNodes.Add(Menu);
             else

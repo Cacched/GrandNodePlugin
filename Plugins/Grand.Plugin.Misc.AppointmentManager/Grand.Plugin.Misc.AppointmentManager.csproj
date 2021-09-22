@@ -32,11 +32,23 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Remove="Extensions.cs" />
+    <EmbeddedResource Remove="Views\_ViewImports.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="Views\_ViewImports.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Views\_ViewImports.cshtml">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="MediatR" Version="9.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.TagHelpers" Version="2.2.0" />
   </ItemGroup>
   <ItemGroup>
     <None Update="Content\**\*.*">
@@ -58,6 +70,10 @@
     </ProjectReference>
     <ProjectReference Include="..\..\Grand.Services\Grand.Services.csproj">
       <Private>false</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Grand.Web\Grand.Web.csproj" />
+    <ProjectReference Include="..\EAppointment.Entites\EAppointment.Entites.csproj">
+      <Private>true</Private>
     </ProjectReference>
     <ProjectReference Include="..\EAppointment.Services\EAppointment.Services.csproj">
       <Private>false</Private>

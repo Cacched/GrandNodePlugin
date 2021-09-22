@@ -1,5 +1,4 @@
 ﻿using Grand.Core.Routing;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 
 namespace Grand.Plugin.Misc.AppointmentBooking

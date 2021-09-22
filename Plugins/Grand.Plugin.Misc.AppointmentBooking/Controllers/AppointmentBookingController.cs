@@ -8,7 +8,6 @@ using Grand.Plugin.Misc.AppointmentBooking.Commands.Models;
 using Grand.Plugin.Misc.AppointmentBooking.Models;
 using Grand.Plugin.Misc.AppointmentBooking.DTOs;
 using Grand.Plugin.Misc.AppointmentBooking.Queries.Models;
-using Grand.Plugin.Misc.AppointmentBooking.ViewModelServices;
 using Grand.Services.Customers;
 using Grand.Services.Security;
 using MediatR;
@@ -27,7 +26,6 @@ namespace Grand.Plugin.Misc.AppointmentBooking.Controllers
         private readonly IWorkContext _workContext;
         private readonly ICustomerService _customerService;
         private readonly IPermissionService _permissionService;
-        private readonly IAppointmentDtoService _appointmentDtoService;
         public AppointmentBookingController(
             IMediator mediator,
             IWorkContext workContext,
@@ -70,18 +68,32 @@ namespace Grand.Plugin.Misc.AppointmentBooking.Controllers
             return BadRequest(ModelState);
         }
 
-        public async Task<IActionResult> Put([FromBody] BookAppointmentDto model)
+        [HttpPut]
+        public async Task<IActionResult> EditAppointment([FromBody] ListAppointmentsDto models)
         {
             
             if (ModelState.IsValid)
             {
-                model = await _mediator.Send(new UpdateAppointmentCommand() { Model = model });
-               SuccessNotification("Appointment Saved Successfullly");
-                RedirectToAction("ViewAppointments");
+                models = await _mediator.Send(new UpdateAppointmentCommand() { Model = models });
+               
+                return RedirectToAction("ViewAppointments");
             }
             return BadRequest(ModelState);
         }
-        
+
+        [HttpDelete]
+        public async Task<IActionResult> DeleteAppointment([FromBody] ListAppointmentsDto models)
+        {
+
+            if (ModelState.IsValid)
+            {
+                models = await _mediator.Send(new DeleteAppointmentCommand() { Model = models });
+
+                return RedirectToAction("ViewAppointments");
+            }
+            return BadRequest(ModelState);
+        }
+
         public async Task<IActionResult> ViewAppointments()
         {
             if (!_workContext.CurrentCustomer.IsRegistered() || _workContext.CurrentCustomer.IsAdmin())
