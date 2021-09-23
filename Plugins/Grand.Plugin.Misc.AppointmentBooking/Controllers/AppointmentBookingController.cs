@@ -17,6 +17,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Grand.Framework.Security.Authorization;
 using EAppointment.Entites;
+using Grand.Plugin.Misc.AppointmentManager.ViewModelServices;
 
 namespace Grand.Plugin.Misc.AppointmentBooking.Controllers
 {
@@ -26,17 +27,20 @@ namespace Grand.Plugin.Misc.AppointmentBooking.Controllers
         private readonly IWorkContext _workContext;
         private readonly ICustomerService _customerService;
         private readonly IPermissionService _permissionService;
+        private readonly IAppointmentsDtoService _appointmentDtoService;
         public AppointmentBookingController(
             IMediator mediator,
             IWorkContext workContext,
             ICustomerService customerService,
-            IPermissionService permissionService
+            IPermissionService permissionService,
+            IAppointmentsDtoService appointmentDtoService
             )
         {
-            this._mediator = mediator;
-            this._workContext = workContext;
-            this._customerService = customerService;
-            this._permissionService = permissionService;
+            _mediator = mediator;
+            _workContext = workContext;
+            _customerService = customerService;
+            _permissionService = permissionService;
+            _appointmentDtoService = appointmentDtoService;
         }
 
         public async Task<IActionResult> BookAppointment()
@@ -45,14 +49,13 @@ namespace Grand.Plugin.Misc.AppointmentBooking.Controllers
             {
                 return Challenge();
             }
-            var model = new BookAppointmentDto();
+            
             var claims = new Dictionary<string, string>();
             claims.Add("Email", this._workContext.CurrentCustomer.Email);
             var customer = _customerService.GetCustomerById(_workContext.CurrentCustomer.Id);
             var token = await _mediator.Send(new GenerateTokenCommand() { Claims = claims });
             ViewBag.token = token;
-            model.CustomerId = customer.Result.Id;
-            model.CustomerName = customer.Result.GetFullName();
+            var model =  _appointmentDtoService.PrepareBookAppointmentModel(customer.Result);
             return View("~/Plugins/Misc.AppointmentBooking/Views/AppointmentBooking/BookAppointment.cshtml", model);
         }
 
@@ -61,9 +64,9 @@ namespace Grand.Plugin.Misc.AppointmentBooking.Controllers
         {
             if (ModelState.IsValid)
             {
-                model = await _mediator.Send(new AddAppointmentCommand() { Model = model });
+                await _appointmentDtoService.InsertAppointment(model);
                 SuccessNotification("Appointment Saved Successfullly");
-                return RedirectToAction("AppointmentList");
+                return RedirectToAction("ViewAppointments");
             }
             return BadRequest(ModelState);
         }
@@ -74,8 +77,7 @@ namespace Grand.Plugin.Misc.AppointmentBooking.Controllers
             
             if (ModelState.IsValid)
             {
-                models = await _mediator.Send(new UpdateAppointmentCommand() { Model = models });
-               
+                await _appointmentDtoService.EditAppointment(models);
                 return RedirectToAction("ViewAppointments");
             }
             return BadRequest(ModelState);
@@ -87,8 +89,7 @@ namespace Grand.Plugin.Misc.AppointmentBooking.Controllers
 
             if (ModelState.IsValid)
             {
-                models = await _mediator.Send(new DeleteAppointmentCommand() { Model = models });
-
+                await _appointmentDtoService.DeleteSelected(models);
                 return RedirectToAction("ViewAppointments");
             }
             return BadRequest(ModelState);
@@ -114,7 +115,7 @@ namespace Grand.Plugin.Misc.AppointmentBooking.Controllers
         {
             string customerId = _workContext.CurrentCustomer.Id;
             //var (enquiryModels, totalCount) = await _appointmentDtoService.PrepareAppointmentModel(model, command.Page, command.PageSize);
-            var appointmemtData = await _mediator.Send(new GetAllAppointmentsQuery());
+            var appointmemtData = await _mediator.Send(new GetAppointmentByCustomerIdQuery() { CustomerId=customerId});
             var gridModel = new DataSourceResult {
                 Data = appointmemtData,
                 Total = appointmemtData.Count()

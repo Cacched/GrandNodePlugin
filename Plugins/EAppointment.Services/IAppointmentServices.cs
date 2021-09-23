@@ -13,16 +13,17 @@ namespace EAppointment.Services
         Task Delete(EAppointmentBooking model);
         Task<IList<EAppointmentBooking>> GetAll();
         Task<EAppointmentBooking> GetById(string appointmentId);
-        Task<List<EAppointmentBooking>> GetAppointmentByCustomerId(string CustomerId);
+        Task<IList<EAppointmentBooking>> GetAppointmentsByIds(string[] appointmentIds);
+        Task<IList<EAppointmentBooking>> GetAppointmentByCustomerId(string CustomerId);
         string GetAppointmentStatus(string appointmentId);
-        void UpdateAppointmentStatus(string appointmentId);
-        public Task<IPagedList<EAppointmentBooking>> GetAllAppointments(
-           string PatientsId = null,
-           DateTime? createdFromUtc = null,
-           DateTime? createdToUtc = null,
-           int pageIndex = 0,
-           int pageSize = int.MaxValue,
-           int Status = 0, string PatientsFullName = null, string phone = null, string AppointmentId = null);
+        Task UpdateAppointmentStatus(string appointmentId, AppointmentStatus changedStatus);
+        Task<IPagedList<EAppointmentBooking>> GetAllAppointments(
+         int pageIndex = 0,
+        int pageSize = int.MaxValue,
+        string CustomerId = "",
+        string VaccineId = "",
+        string VaccineName = null,
+        int Status = 0, string CustomerName = null, string AppointmentId = "", DateTime? SearchAppointmentDate=null);
 
     }
 }

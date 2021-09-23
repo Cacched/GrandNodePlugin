@@ -24,6 +24,7 @@ namespace Grand.Plugin.Misc.AppointmentBooking
         {
             return model.MapTo<ListAppointmentsDto, EAppointmentBooking>();
         }
+      
 
     }
 }

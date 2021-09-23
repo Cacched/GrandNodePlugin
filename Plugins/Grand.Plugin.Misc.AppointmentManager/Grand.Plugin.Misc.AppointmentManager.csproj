@@ -78,5 +78,6 @@
     <ProjectReference Include="..\EAppointment.Services\EAppointment.Services.csproj">
       <Private>false</Private>
     </ProjectReference>
+    <ProjectReference Include="..\Grand.Plugin.Misc.AppointmentBooking\Grand.Plugin.Misc.AppointmentBooking.csproj" />
   </ItemGroup>
 </Project>

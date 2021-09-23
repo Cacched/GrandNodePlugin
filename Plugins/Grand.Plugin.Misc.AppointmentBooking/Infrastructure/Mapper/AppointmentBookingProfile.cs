@@ -10,8 +10,14 @@ namespace Grand.Plugin.Misc.AppointmentBooking
     {
         public AppointmentBookingProfile()
         {
-            CreateMap<BookAppointmentDto, EAppointmentBooking>();
-            CreateMap<EAppointmentBooking, BookAppointmentDto>();
+            CreateMap<BookAppointmentDto, EAppointmentBooking>()
+                 .ForMember(dest =>
+                    dest.Id,
+                    opt => opt.MapFrom(src => src.AppointmentId));
+            CreateMap<EAppointmentBooking, BookAppointmentDto>()
+                .ForMember(dest =>
+                    dest.AppointmentId,
+                    opt => opt.MapFrom(src => src.Id));
             CreateMap<EAppointmentBooking, ListAppointmentsDto>()
                 .ForMember(dest =>
                     dest.CustomerName,

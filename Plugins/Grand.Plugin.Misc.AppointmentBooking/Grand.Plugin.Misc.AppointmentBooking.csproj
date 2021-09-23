@@ -59,10 +59,10 @@
     <ProjectReference Include="..\..\Grand.Services\Grand.Services.csproj">
       <Private>false</Private>
     </ProjectReference>
-    <ProjectReference Include="..\EAppointment.Entites\EAppointment.Entites.csproj"/>
+    <ProjectReference Include="..\EAppointment.Entites\EAppointment.Entites.csproj" />
       <!--<Private>false</Private>
      </ProjectReference>-->
-    <ProjectReference Include="..\EAppointment.Services\EAppointment.Services.csproj"/>
+    <ProjectReference Include="..\EAppointment.Services\EAppointment.Services.csproj" />
       <!--<Private>false</Private>
     </ProjectReference>-->
   </ItemGroup>

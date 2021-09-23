@@ -1,9 +1,14 @@
-﻿using EAppointment.Services;
+﻿using EAppointment.Entites;
+using EAppointment.Services;
 using Grand.Core;
+using Grand.Plugin.Misc.AppointmentBooking.Models;
 using Grand.Plugin.Misc.AppointmentManager;
 using Grand.Plugin.Misc.AppointmentManager.DTO;
 using Grand.Services.Customers;
+using Grand.Services.Logging;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Grand.Plugin.Misc.AppointmentManager.ViewModelServices
@@ -13,38 +18,69 @@ namespace Grand.Plugin.Misc.AppointmentManager.ViewModelServices
         private readonly IAppointmentServices _bookAppointmentService;
         private readonly ICustomerService _customerService;
         private readonly IWorkContext _workContext;
+        private readonly ICustomerActivityService _customerActivityService;
 
         public CustomerAppointmentsDtoService(IAppointmentServices bookAppointmentService,
             ICustomerService customerService,
-            IWorkContext workContext
+            IWorkContext workContext,
+            ICustomerActivityService customerActivityService
             )
         {
-            this._bookAppointmentService = bookAppointmentService;
-            this._customerService = customerService;
-            this._workContext = workContext;
+            _bookAppointmentService = bookAppointmentService;
+            _customerService = customerService;
+            _workContext = workContext;
+            _customerActivityService = customerActivityService;
+
         }
 
-
-        public async Task<(IEnumerable<CustomerBookedAppointmentsDto> appointmentModels, int totalCount)> PrepareAppointmentModel(CustomerBookedAppointmentsDto model, int pageIndex, int pageSize)
+        public async Task<(IEnumerable<BookAppointmentDto> appointmentModels, int totalCount)> PrepareAppointmentModel(BookAppointmentDto models, int pageIndex, int pageSize)
         {
-            var items = new List<CustomerBookedAppointmentsDto>();
+            DateTime? appointmentDate = null;
+            var items = new List<BookAppointmentDto>();
+            if(models.AppointmentDate!=System.DateTime.MinValue)
+            {
+                 appointmentDate = models.AppointmentDate;
+            }
             var appointmentlist = await this._bookAppointmentService.GetAllAppointments(
-                PatientsId: model.SearchCustomerId,
-                pageIndex: pageIndex - 1,
-                pageSize: pageSize,
-                PatientsFullName: model.SearchCustomerName,
-                Status: (int)model.AvailableAppointmentStatuses,
-                AppointmentId: model.SearchAppointmentId
+                pageIndex :0,
+                pageSize: int.MaxValue,
+                CustomerId: models.CustomerId,
+                VaccineId: models.VaccineId,
+                VaccineName: models.VaccineName,
+                Status: models.StatusId, CustomerName: models.CustomerName, AppointmentId: models.AppointmentId,
+                SearchAppointmentDate:appointmentDate
             );
 
             foreach (var c in appointmentlist)
             {
-                var appointmentModel = new CustomerBookedAppointmentsDto();
-                items.Add(c.ToModel());
+                items.Add(c.ToBaseModel());
             }
 
 
             return (items, appointmentlist.TotalCount);
+        }
+        public  async Task DeleteSelected(IList<string> selectedIds)
+        {
+            var appointments = new List<EAppointmentBooking>();
+            appointments.AddRange(await _bookAppointmentService.GetAppointmentsByIds(selectedIds.ToArray()));
+            for (var i = 0; i < appointments.Count; i++)
+            {
+                var customerAppointment = appointments[i];
+                                
+                //activity log 
+                await _customerActivityService.InsertActivity("Delete Appointment", customerAppointment.Id, "ActivityLog.DeleteAppointment", customerAppointment.Id);
+                
+                await _bookAppointmentService.Delete(customerAppointment);
+
+            }
+        }
+
+        public virtual async Task<BookAppointmentDto> EditAppointment(BookAppointmentDto model)
+        {
+            var appointment = model.ToEntityFromBaseModel();
+            appointment.EntryDate = System.DateTime.Today;
+            await _bookAppointmentService.Update(appointment);
+            return appointment.ToBaseModel();
         }
 
     }

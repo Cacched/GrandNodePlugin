@@ -1,5 +1,7 @@
 ﻿using Grand.Core.ModelBinding;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using System;
+using System.Collections.Generic;
 
 namespace Grand.Plugin.Misc.AppointmentBooking.Models
 {
@@ -7,10 +9,12 @@ namespace Grand.Plugin.Misc.AppointmentBooking.Models
     {
         public BookAppointmentDto()
         {
+            VaccinesList = new List<SelectListItem>();
         }
         public string AppointmentId { get; set; }
         public string VaccineId { get; set; }
         public string VaccineName { get; set; }
+        public List<SelectListItem> VaccinesList { get; set; }
         public string Doze { get; set; }
         /// <summary>
         /// Gets or sets the Customer Guid

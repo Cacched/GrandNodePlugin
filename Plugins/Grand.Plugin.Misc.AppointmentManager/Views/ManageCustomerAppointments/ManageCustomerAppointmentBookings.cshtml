@@ -4,7 +4,6 @@
 @using Grand.Framework
 @using Grand.Framework.Extensions
 @using Grand.Framework.Mvc.Razor
-@using Grand.Framework.TagHelpers.Admin
 @{
     //page title
     ViewBag.Title = "Customer Booked Appointments";
@@ -53,7 +52,7 @@
                             <div class="form-group popup">
                                 <label class="col-2 control-label col-sm-2">Customer Name</label>
                                 <div class="col-10 col-md-4 col-sm-4">
-                                    <input asp-for="SearchCustomerName" />
+                                    <input id="SearchCustomerName" asp-for="SearchCustomerName" />
                                 </div>
                                 <div class="col-8 col-md-6 col-sm-4 mt-mobile-10">
                                     <div class="btn-group btn-group-devided">
@@ -72,27 +71,39 @@
                             <div class="form-group">
                                 <label asp-for="SearchCustomerId" class="control-label col-4 col-md-4 col-sm-4">Customer Id</label>
                                 <div class="col-8 col-md-8 col-sm-8">
-                                    <input asp-for="SearchCustomerId" />
+                                    <input id="SearchCustomerId" asp-for="SearchCustomerId" />
                                 </div>
                             </div>
                             <div class="form-group">
                                 <label class="control-label col-4 col-md-4 col-sm-4">Vaccine Name</label>
                                 <div class="col-8 col-md-8 col-sm-8">
-                                    <input asp-for="SearchVaccineName" />
+                                    <input id="SearchVaccineName" asp-for="SearchVaccineName" />
                                 </div>
                             </div>
                         </div>
                         <div class="form-body col-md-6 extend-collapse">
-                            <div class="form-group">
+                            @*<div class="form-group">
                                 <label asp-for="AvailableAppointmentStatuses" class="control-label col-4 col-md-4 col-sm-4">Appointment Status</label>
                                 <div class="col-8 col-md-8 col-sm-8">
-                                    <input asp-for="AvailableAppointmentStatuses" asp-selectitem="Model.AvailableAppointmentStatuses" />
+                                    <input asp-for="AvailableAppointmentStatuses" id="AvailableAppointmentStatuses" asp-selectitem="Model.AvailableAppointmentStatuses" />
+                                    <select id="AvailableAppointmentStatuses" asp-for="VaccineName" class="form-control">
+                                        <option value="-1">Select Vaccine</option>
+                                        <option value="@Model.AvailableAppointmentStatuses">CoviShield</option>
+                                        <option value="@Model.AvailableAppointmentStatuses">VeroCell</option>
+                                        <option value="@Model.AvailableAppointmentStatuses">Janssen</option>
+                                    </select>
                                 </div>
-                            </div>
+                            </div>*@
                             <div class="form-group">
                                 <label asp-for="SearchAppointmentId" class="control-label col-4 col-md-4 col-sm-4">Appointment Id</label>
                                 <div class="col-8 col-md-8 col-sm-8">
-                                    <input asp-for="SearchAppointmentId" />
+                                    <input id="SearchAppointmentId" asp-for="SearchAppointmentId" />
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label asp-for="SearchAppointmentDate" class="control-label col-4 col-md-4 col-sm-4">Appointment Date</label>
+                                <div class="col-8 col-md-8 col-sm-8">
+                                    <input id="SearchAppointmentDate" asp-for="SearchAppointmentDate" />
                                 </div>
                             </div>
 
@@ -120,6 +131,10 @@
                     dataSource: {
                         transport: {
                             read: {
+                                headers: {
+                                    'Accept': 'application/json',
+                                    'Content-Type': 'application/json; charset=utf-8'
+                                },
                                 url: "@Html.Raw(Url.Action("CustomerAppointmentsList", "ManageCustomerAppointments"))",
                                 type: "POST",
                                 dataType: "json",
@@ -130,27 +145,33 @@
                                     'Accept': 'application/json',
                                     'Content-Type': 'application/json; charset=utf-8'
                                 },
-                                url: "@Html.Raw(Url.Action("EditAppointment", "AppointmentBooking"))",
+                                url: "@Html.Raw(Url.Action("EditAppointment", "ManageCustomerAppointments"))",
                                 type: "PUT",
                                 dataType: "json",
+                            },
+                            parameterMap: function (model, operation) {
+                                if (operation !== "read" && model) {
+                                    return kendo.stringify(model);
+                                }
                             },
                         },
                         schema: {
                             data: "Data",
                             total: "Total",
                             //errors: "Errors"
-                            //model: {
-                            //    id: "SearchAppointmentId",
-                            //    fields: {
-                            //        SearchAppointmentId: { editable: false, nullable: false },
-                            //        SearchCustomerId: { editable: false, nullable: false },
-                            //        SearchCustomerName: { editable:true,validation: { required: true } },
-                            //        SearchVaccineName: { type: "text", editable: false },
-                            //        SearchVaccineId: { type: "text", editable: false },
-
-                            //        Status: { type: "text", validation: { required: true }, editable: false },
-                            //    },
-                            //},
+                            model: {
+                                id: "AppointmentId",
+                                fields: {
+                                    AppointmentId: { editable: false, nullable: false },
+                                    CustomerId: { editable: false, nullable: false },
+                                    CustomerName: { editable:true,validation: { required: true } },
+                                    VaccineName: { type: "text", editable: false },
+                                    VaccineId: { type: "text", editable: false },
+                                    AppointmentDate: { type: "date", editable: true, validation: { required: true }  },
+                                    //Status: { type: "text", validation: { required: true }, editable: false }
+                                    //Status: { type: "text", validation: { required: true }, editable: false },
+                                },
+                            },
                         },
                         error: function(e) {
                             display_kendoui_grid_error(e);
@@ -174,28 +195,36 @@
                     dataBound: onDataBound,
                     columns: [
                         {
-                            field: "SearchAppointmentId",
+                            field: "AppointmentId",
                             headerTemplate: "<label class='mt-checkbox mt-checkbox-outline control control-checkbox '><input id='mastercheckbox' type='checkbox'/><div class='control__indicator control__indicator_customers mt-top'></div></label>",
                             headerAttributes: { style: "text-align:center" },
                             attributes: { style: "text-align:center" },
-                            template: "<label class='mt-checkbox mt-checkbox-outline control control-checkbox mt-NoMargin'><input type='checkbox' value='#=SearchAppointmentId#' class='checkboxGroups'/><div class='control__indicator control__indicator_customers mt-NoMargin'></div></label>",
+                            template: "<label class='mt-checkbox mt-checkbox-outline control control-checkbox mt-NoMargin'><input type='checkbox' value='#= AppointmentId#' class='checkboxGroups'/><div class='control__indicator control__indicator_customers mt-NoMargin'></div></label>",
                             width: 40
                         },
 
                         {
-                            field: "SearchCustomerName",
+                            field: "CustomerName",
                             title: "Customer Name",
                             width: 200,
                         },
                         {
-                            field: "SearchVaccineName",
+                            field: "VaccineName",
                             title: "Vaccine",
+                            width: 200
+                        },
+                        {
+                            field: "AppointmentDate",
+                            title: "Appointment Date",
+                            template: "#= kendo.toString(kendo.parseDate(AppointmentDate, 'yyyy-MM-dd'), 'MM/dd/yyyy') #",
                             width: 200
                         },
                         {
                             command: [
                                 //define the commands here
-                                { name: "edit", text: "Edit" },
+                                {
+                                    name: "edit", text: "Edit",
+                                },
                             ],
                             title: "Edit Customer Appointment",
                             width: 70,
@@ -283,6 +312,12 @@
                         return false;
                     }
                 });
+                $("#@Html.FieldIdFor(model => model.SearchAppointmentDate)").keydown(function (event) {
+                    if (event.keyCode == 13) {
+                        $("#search-customers").click();
+                        return false;
+                    }
+                });
                 //delete selected
                 $('#delete-selected').click(function(e) {
 
@@ -296,7 +331,7 @@
                     $.ajax({
                         cache: false,
                         type: "POST",
-                        url: "@(Url.Action("DeleteSelected", "Customer"))",
+                        url: "@(Url.Action("DeleteSelected", "ManageCustomerAppointments"))",
                         data: postData,
                         complete: function(data) {
                             //reload grid
@@ -316,7 +351,7 @@
                 });
 
                 //wire up checkboxes.
-                $('#customers-grid').on('change', 'input[type=checkbox][id!=mastercheckbox]', function (e) {
+                $('#customerappointments-grid').on('change', 'input[type=checkbox][id!=mastercheckbox]', function (e) {
                     var $check = $(this);
                     if ($check.is(":checked") == true) {
                         var checked = jQuery.inArray($check.val(), selectedIds);
@@ -340,7 +375,7 @@
 
             function onDataBound(e) {
 
-                $('#customers-grid input[type=checkbox][id!=mastercheckbox]').each(function () {
+                $('#customerappointments-grid input[type=checkbox][id!=mastercheckbox]').each(function () {
                     var currentId = $(this).val();
                     var checked = jQuery.inArray(currentId, selectedIds);
                     //set checked based on if current checkbox's value is in selectedIds.
@@ -351,18 +386,19 @@
             }
 
             function updateMasterCheckbox() {
-                var numChkBoxes = $('#customers-grid input[type=checkbox][id!=mastercheckbox]').length;
-                var numChkBoxesChecked = $('#customers-grid input[type=checkbox][id!=mastercheckbox]:checked').length;
+                var numChkBoxes = $('#customerappointments-grid input[type=checkbox][id!=mastercheckbox]').length;
+                var numChkBoxesChecked = $('#customerappointments-grid input[type=checkbox][id!=mastercheckbox]:checked').length;
                 $('#mastercheckbox').prop('checked', numChkBoxes == numChkBoxesChecked && numChkBoxes > 0);
             }
 
             function additionalData() {
                 var data = {
-                    SearchCustomerName: $('#@Html.FieldIdFor(model => Model.SearchCustomerName)').val(),
-                    SearchCustomerId: $('#@Html.FieldIdFor(model => model.SearchCustomerId)').val(),
-                    SearchAppointmentId: $('#@Html.FieldIdFor(model => model.SearchAppointmentId)').val(),
-                    SearchVaccineId: $('#@Html.FieldIdFor(model => model.SearchVaccineId)').val(),
-                    SearchVaccineName: $('#@Html.FieldIdFor(model => model.SearchVaccineName)').val(),
+                    CustomerName: $('#@Html.FieldIdFor(model => model.SearchCustomerName)').val(),
+                    CustomerId: $('#@Html.FieldIdFor(model => model.SearchCustomerId)').val(),
+                    AppointmentId: $('#@Html.FieldIdFor(model => model.SearchAppointmentId)').val(),
+                    VaccineId: $('#@Html.FieldIdFor(model => model.SearchVaccineId)').val(),
+                    VaccineName: $('#@Html.FieldIdFor(model => model.SearchVaccineName)').val(),
+                    AppointmentDate: $('#@Html.FieldIdFor(model => model.SearchAppointmentDate)').val(),
                 };
                 console.log(data);
                 addAntiForgeryToken(data);

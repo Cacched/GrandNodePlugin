@@ -3,6 +3,7 @@ using Grand.Core.Configuration;
 using Grand.Core.DependencyInjection;
 using Grand.Core.TypeFinders;
 using Grand.Plugin.Misc.AppointmentBooking.Queries.Models;
+using Grand.Plugin.Misc.AppointmentManager.ViewModelServices;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using System;
@@ -16,6 +17,7 @@ namespace Grand.Plugin.Misc.AppointmentBooking
         {
             serviceCollection.AddScoped<AppointmentBookingPlugin>();
             serviceCollection.AddMediatR(typeof(AppointmentServices).Assembly);
+            serviceCollection.AddScoped<IAppointmentsDtoService, AppointmentsDtoService>();
         }
 
         public int Order {
