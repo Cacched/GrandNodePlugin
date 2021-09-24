@@ -51,6 +51,22 @@ namespace EAppointment.Entites
         /// Gets or sets the Status of the Appointment
         /// </summary>
         public AppointmentStatus Status { get; set; }
+        /// <summary>
+        /// Gets or sets the Age of the Customer booking the appointment
+        /// </summary>
+        public int Age { get; set; }
+        /// <summary>
+        /// Gets or sets the Blood Pressure of the Appointment
+        /// </summary>
+        public string BloodPressure { get; set; }
+        /// <summary>
+        /// Gets or sets the Temperature of the Customer booking the appointment
+        /// </summary>
+        public string Temperature { get; set; }
+        /// <summary>
+        /// Gets or sets the Weight of the Customer booking the appointment
+        /// </summary>
+        public string Weight { get; set; }
     }
 
     public enum AppointmentStatus

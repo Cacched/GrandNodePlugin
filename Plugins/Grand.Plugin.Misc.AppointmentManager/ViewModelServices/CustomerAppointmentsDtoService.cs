@@ -6,6 +6,7 @@ using Grand.Plugin.Misc.AppointmentManager;
 using Grand.Plugin.Misc.AppointmentManager.DTO;
 using Grand.Services.Customers;
 using Grand.Services.Logging;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -32,7 +33,16 @@ namespace Grand.Plugin.Misc.AppointmentManager.ViewModelServices
             _customerActivityService = customerActivityService;
 
         }
-
+        public CustomerBookedAppointmentsDto PrepareAppointmentSearchModel()
+        {
+            var model = new CustomerBookedAppointmentsDto();
+            var appointmentStatuses = from AppointmentStatus d in Enum.GetValues(typeof(AppointmentStatus))
+                                      select new { ID = ((int)d), Name = d.ToString() };
+            var statusList = new SelectList(appointmentStatuses, "ID", "Name");
+            statusList.Append(new SelectListItem { Text = "Select Status", Value = "-1", Selected = true });
+            model.AppointmentStatusList = statusList;
+            return model;
+        }
         public async Task<(IEnumerable<BookAppointmentDto> appointmentModels, int totalCount)> PrepareAppointmentModel(BookAppointmentDto models, int pageIndex, int pageSize)
         {
             DateTime? appointmentDate = null;
@@ -41,6 +51,7 @@ namespace Grand.Plugin.Misc.AppointmentManager.ViewModelServices
             {
                  appointmentDate = models.AppointmentDate;
             }
+            
             var appointmentlist = await this._bookAppointmentService.GetAllAppointments(
                 pageIndex :0,
                 pageSize: int.MaxValue,

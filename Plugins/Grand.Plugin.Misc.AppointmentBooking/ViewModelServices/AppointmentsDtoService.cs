@@ -85,7 +85,6 @@ namespace Grand.Plugin.Misc.AppointmentManager.ViewModelServices
         }
         public async Task InsertAppointment(BookAppointmentDto model)
         {
-            model.VaccineName =   _productService.GetProductById(model.VaccineId).Result.Name;
             model = await _mediator.Send(new AddAppointmentCommand() { Model = model });
         }
 

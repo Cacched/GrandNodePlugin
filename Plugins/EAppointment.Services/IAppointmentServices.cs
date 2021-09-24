@@ -23,7 +23,7 @@ namespace EAppointment.Services
         string CustomerId = "",
         string VaccineId = "",
         string VaccineName = null,
-        int Status = 0, string CustomerName = null, string AppointmentId = "", DateTime? SearchAppointmentDate=null);
+        int? Status = 0, string CustomerName = null, string AppointmentId = "", DateTime? SearchAppointmentDate=null);
 
     }
 }

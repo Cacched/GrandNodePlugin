@@ -10,6 +10,7 @@ namespace Grand.Plugin.Misc.AppointmentManager.ViewModelServices
         Task<(IEnumerable<BookAppointmentDto> appointmentModels, int totalCount)> PrepareAppointmentModel(BookAppointmentDto models, int pageIndex, int pageSize);
         Task DeleteSelected(IList<string> selectedIds);
         Task<BookAppointmentDto> EditAppointment(BookAppointmentDto model);
+        CustomerBookedAppointmentsDto PrepareAppointmentSearchModel();
 
     }
 }

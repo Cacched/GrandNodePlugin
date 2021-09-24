@@ -12,7 +12,7 @@ namespace Grand.Plugin.Misc.AppointmentBooking
         {
             CreateMap<EAppointmentBooking, CustomerBookedAppointmentsDto>()
                 .ForMember(dest =>
-                    dest.AvailableAppointmentStatuses,
+                    dest.AppointmentStatusList,
                     opt => opt.MapFrom(src => src.Status))
                 .ForMember(dest =>
                     dest.SearchAppointmentId,
@@ -42,7 +42,7 @@ namespace Grand.Plugin.Misc.AppointmentBooking
                     opt => opt.MapFrom(src => src.SearchCustomerId))
                 .ForMember(dest =>
                     dest.Status,
-                    opt => opt.MapFrom(src => src.AvailableAppointmentStatuses))
+                    opt => opt.MapFrom(src => src.AppointmentStatusList))
              .ForMember(dest =>
                     dest.VaccineName,
                     opt => opt.MapFrom(src => src.SearchVaccineName))
@@ -70,7 +70,7 @@ namespace Grand.Plugin.Misc.AppointmentBooking
                     dest.SearchCustomerId,
                     opt => opt.MapFrom(src => src.CustomerId))
                 .ForMember(dest =>
-                    dest.AvailableAppointmentStatuses,
+                    dest.AppointmentStatusList,
                     opt => opt.MapFrom(src => src.Status))
              .ForMember(dest =>
                     dest.SearchAppointmentDate,
@@ -94,7 +94,7 @@ namespace Grand.Plugin.Misc.AppointmentBooking
                     opt => opt.MapFrom(src => src.SearchCustomerId))
                 .ForMember(dest =>
                     dest.Status,
-                    opt => opt.MapFrom(src => src.AvailableAppointmentStatuses))
+                    opt => opt.MapFrom(src => src.AppointmentStatusList))
              .ForMember(dest =>
                     dest.AppointmentDate,
                     opt => opt.MapFrom(src => src.SearchAppointmentDate))

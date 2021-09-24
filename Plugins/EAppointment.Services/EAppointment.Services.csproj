@@ -7,6 +7,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\Grand.Core\Grand.Core.csproj" />
     <ProjectReference Include="..\..\Grand.Domain\Grand.Domain.csproj" />
+    <ProjectReference Include="..\..\Grand.Services\Grand.Services.csproj" />
     <ProjectReference Include="..\EAppointment.Entites\EAppointment.Entites.csproj" />
   </ItemGroup>
 

@@ -2,6 +2,7 @@
 using Grand.Domain;
 using Grand.Domain.Customers;
 using Grand.Domain.Data;
+using Grand.Services.Catalog;
 using MongoDB.Bson;
 using MongoDB.Driver;
 using MongoDB.Driver.Linq;
@@ -16,13 +17,16 @@ namespace EAppointment.Services
     public class AppointmentServices : IAppointmentServices
     {
         private readonly IRepository<EAppointmentBooking> _appointmentRepository;
-
+        private readonly IProductService _productService;
         public AppointmentServices(IRepository<EAppointmentBooking> appointmentRepository)
         {
             this._appointmentRepository = appointmentRepository;
         }
         public async Task Delete(EAppointmentBooking model)
         {
+            if (model == null)
+                throw new ArgumentNullException("appointment");
+
             await _appointmentRepository.DeleteAsync(model);
         }
 
@@ -30,18 +34,26 @@ namespace EAppointment.Services
         {
             return await _appointmentRepository.Table.ToListAsync();
         }
-        public async Task<IList<EAppointmentBooking>> GetAppointmentByCustomerId(string CustomerId)
+        public  async Task<IList<EAppointmentBooking>> GetAppointmentByCustomerId(string CustomerId)
         {
+            if (string.IsNullOrWhiteSpace(CustomerId))
+                return null;
+
             return await _appointmentRepository.Table.Where(x=>x.CustomerId == CustomerId).ToListAsync();
         }
 
         public string GetAppointmentStatus(string appointmentId)
         {
+            if (string.IsNullOrWhiteSpace(appointmentId))
+                return null;
             return _appointmentRepository.GetById(appointmentId).Status.ToString();
         }
 
         public async Task<EAppointmentBooking> GetById(string appointmentId)
         {
+            if (string.IsNullOrWhiteSpace(appointmentId))
+                return await Task.FromResult<EAppointmentBooking>(null);
+
             return await _appointmentRepository.GetByIdAsync(appointmentId);
         }
         public async Task<IList<EAppointmentBooking>> GetAppointmentsByIds(string[] appointmentIds)
@@ -66,16 +78,47 @@ namespace EAppointment.Services
 
         public async Task Insert(EAppointmentBooking model)
         {
-           await _appointmentRepository.InsertAsync(model);
+            if (model == null)
+                throw new ArgumentNullException("appointment");
+            else if(model.VaccineId=="-1")
+            {
+                throw new ArgumentNullException("vaccine");
+            }
+            else if (model.AppointmentDate == DateTime.MinValue)
+            {
+                throw new ArgumentNullException("Appointment Date");
+            }
+            else if (model.Age <=0)
+            {
+                throw new ArgumentNullException("Age");
+            }
+            else if (string.IsNullOrEmpty(model.Weight))
+            {
+                throw new ArgumentNullException("Weight");
+            }
+            else if (string.IsNullOrEmpty(model.Temperature))
+            {
+                throw new ArgumentNullException("Temperature");
+            }
+            else if (string.IsNullOrEmpty(model.BloodPressure))
+            {
+                throw new ArgumentNullException("BloodPressure");
+            }
+            model.VaccineName = _productService.GetProductById(model.VaccineId).Result.Name;
+            await _appointmentRepository.InsertAsync(model);
         }
 
         public async Task Update(EAppointmentBooking model)
         {
+            if (model == null)
+                throw new ArgumentNullException("appointment");
             await _appointmentRepository.UpdateAsync(model);
         }
 
         public async Task UpdateAppointmentStatus(string appointmentId, AppointmentStatus changedStatus)
         {
+            if (string.IsNullOrWhiteSpace(appointmentId))
+                throw new ArgumentNullException("appointment");
             var appointment = GetById(appointmentId);
             appointment.Result.Status = changedStatus;
             await Update(appointment.Result);
@@ -87,7 +130,7 @@ namespace EAppointment.Services
            string CustomerId = "",
            string VaccineId = "",
            string VaccineName = null,
-           int Status = 0, string CustomerName = null, string AppointmentId = "", DateTime? SearchAppointmentDate = null)
+           int? Status = 0, string CustomerName = null, string AppointmentId = "", DateTime? SearchAppointmentDate = null)
         {
             #region Get enquiries
 
@@ -126,10 +169,10 @@ namespace EAppointment.Services
             {
                 filter = filter & builder.Where(o => VaccineName.ToLower() == o.VaccineName.ToLower());
             }
-            //if (Status>=0)
-            //{
-            //    filter = filter & builder.Where(o => Status == (int)o.Status);
-            //}
+            if (Status >= 0)
+            {
+                filter = filter & builder.Where(o => Status == (int)o.Status);
+            }
 
 
             var builderSort = Builders<EAppointmentBooking>.Sort.Descending(x => x.EntryDate);

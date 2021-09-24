@@ -1,115 +1,14 @@
 ﻿@model Grand.Plugin.Misc.AppointmentBooking.Models.BookAppointmentDto
+@using Grand.Plugin.Misc.AppointmentBooking.Validators
 @{ Layout = "_ColumnsTwo"; }
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
-
-@*<div class="row col-md-14">
-    <div class="col-md-12">
-        <div class="x_panel light form-fit">
-            <div class="x_title">
-                <div class="caption">
-                    <i class="fa fa-cube">Book Appointment</i>
-                </div>
-            </div>
-            <div class="k-widget k-header k-tabstrip k-floatwrap k-tabstrip-left mt-3">
-                <div class="k-content k-state-active d-block bg-light">
-                    <form asp-controller="AppointmentBooking" asp-action="SaveAppointment" method="post">
-                        <div class="form-horizontal">
-                            <div class="form-body">
-                                <div class="form-group">
-                                    <div class="x_content form">
-                                        <div class="row">
-                                            <div class="col-lg-12 col-md-12 col-xs-12">
-                                                <div class="d-flex flex-wrap align-items-center">
-                                                    <div class="search-icon mr-2 col">
-                                                        
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="border d-flex p3 p-2 border-warning">
-                                    <div class="col-md-3">
-                                        <label>Choose Date :</label>
-                                        <div class="input-group">
-                                            <input type="date" id="Date" asp-for=@Model.AppointmentDate />
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="form-row">
-                                    <div class="form-group col-sm-6">
-                                        <div class="row">
-                                            <div class="form-group col-sm-3">
-                                                <label class="control-label">Age :</label>
-                                                <input type="number" id="Age"  class="form-control k-input text-box single-line" asp-for="Age"/>
-                                            </div>
-                                            <div class="form-group col-sm-3">
-                                                <label class="control-label">Blood Pressure :</label>
-                                                <input type="text" id="BloodPressure"  class="form-control k-input text-box single-line" asp-for="BloodPressure" />
-                                            </div>
-                                            <div class="form-group col-sm-3">
-                                                <label class="control-label">Temperature :</label>
-                                                <input type="text" id="Temperature"  class="form-control k-input text-box single-line"  asp-for="Temperature" />
-                                            </div>
-                                            <div class="form-group col-sm-3">
-                                                <label class="control-label">Weight :</label>
-                                                <input type="text" id="Weight" class="form-control k-input text-box single-line" asp-for="Weight"  />
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                </div>
-                                <div class="form-row">
-                                    <div class="form-group col-sm-6">
-                                        <div class="row">
-                                            <div class="form-group col-sm-4">
-                                                <label class="label-title">Vaccine:</label>
-                                                <select id="vaccine" asp-for="VaccineName" class="form-control">
-                                                    <option value="-1">Select Vaccine</option>
-                                                    <option value="@Model.VaccineId">CoviShield</option>
-                                                    <option value="@Model.VaccineId">VeroCell</option>
-                                                    <option value="@Model.VaccineId">Janssen</option>
-                                                </select>
-                                            </div>
-                                            <div class="form-group col-sm-4">
-                                                <label class="label-title">Doze Status:</label>
-                                                <select id="doze"  asp-for=@Model.Doze class="form-control">
-                                                    <option value="-1">Select Doze</option>
-                                                    <option value="1">First</option>
-                                                    <option value="2">Second</option>
-                                                </select>
-                                            </div>
-
-                                        </div>
-                                    </div>
-                                    <div class="form-group col-sm-6 pull-right">
-                                        <label class="control-label">Remarks * :</label>
-                                        <textarea type="textarea" id="DetailComplaints" name="SelectType" asp-for=@Model.Remarks class="form-control k-input text-box single-line" ></textarea>
-                                    </div>
-                                </div>
-                                <div class="form-row align-items-center">
-                                    <button class="btn pull-right green" id="createappointment" type="submit">Create Appointment</button>
-                                </div>
-                            </div>
-                        </div>
-                    </form>
-                   
-                </div>
-
-            </div>
-            <div>
-            </div>
-        </div>
-
-    </div>
-</div>*@
 
 <body class="bg-light">
     <div class="container">
         <div class="d-flex justify-content-center" style="position:relative;left:-150px;">
             <h2>Book An Appointment</h2>
         </div>
-        <hr class="mb-4"/>
+        <hr class="mb-4" />
         <div class="row">
             <div class="col-md-8 order-md-1">
                 <h4 class="mb-3">Your Information</h4>
@@ -125,24 +24,31 @@
                         <div class="col-md-6 mb-3">
                             <label class="control-label">Age :</label>
                             <input type="number" id="Age" class="form-control" asp-for="Age" />
+                            <span asp-validation-for="Age" class="text-danger"></span>
                             <label class="control-label">Blood Pressure :</label>
-                            <input type="text" id="BloodPressure" class="form-control" asp-for="BloodPressure" />
+                            <input required type="text" id="BloodPressure" class="form-control" asp-for="BloodPressure" />
+                            <span asp-validation-for="BloodPressure" class="text-danger"></span>
+
                         </div>
                     </div>
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label class="control-label">Temperature :</label>
-                            <input type="text" id="Temperature" class="form-control" asp-for="Temperature" />
+                            <input required type="text" id="Temperature" class="form-control" asp-for="Temperature" />
+                            <span asp-validation-for="Temperature" class="text-danger"></span>
                         </div>
                         <div class="col-md-6 mb-3">
                             <label class="control-label">Weight :</label>
-                            <input type="text" id="Weight" class="form-control" asp-for="Weight" />
+                            <input required type="text" id="Weight" class="form-control" asp-for="Weight" />
+                            <span asp-validation-for="Temperature" class="text-danger"></span>
                         </div>
                     </div>
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label class="control-label">Choose Date :</label>
-                            <input type="date" id="Date" class="form-control" asp-for=@Model.AppointmentDate />
+                            <input required type="date" id="Date" class="form-control" asp-for=@Model.AppointmentDate />
+                            <span asp-validation-for="AppointmentDate" class="text-danger"></span>
+                            @Html.ValidationMessageFor(model => model.AppointmentDate == DateTime.MinValue)
                         </div>
                     </div>
 
@@ -150,17 +56,21 @@
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label class="label-title">Vaccine:</label>
-                            <select class="form-control" asp-for="VaccineId" asp-items="@Model.VaccinesList">
-                                <option asp-for="VaccineName">Please select one</option>
+                            <select required class="form-control" asp-for="VaccineId" asp-items="@Model.VaccinesList">
                             </select>
+                            <span asp-validation-for="VaccineId" class="text-danger"></span>
+                            @Html.ValidationMessageFor(model => model.VaccineId == "-1")
+
                         </div>
                         <div class="col-md-6 mb-3">
                             <label class="label-title">Doze Status:</label>
-                            <select id="doze" asp-for=@Model.Doze class="form-control">
+                            <select required id="doze" asp-for=@Model.Doze class="form-control">
                                 <option value="-1">Select Doze</option>
                                 <option value="1">First</option>
                                 <option value="2">Second</option>
                             </select>
+                            <span asp-validation-for="Doze" class="text-danger"></span>
+                            @Html.ValidationMessageFor(model => model.Doze == "-1")
 
                         </div>
                     </div>
@@ -179,6 +89,8 @@
     </div>
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/js/select2.min.js"></script>
+    <script src="@Url.Content("~/Scripts/jquery.validate.min.js")" type="text/javascript"></script>
+    <script src="@Url.Content("~/Scripts/jquery.validate.unobtrusive.min.js")" type="text/javascript"></script>
 
 </body>
 

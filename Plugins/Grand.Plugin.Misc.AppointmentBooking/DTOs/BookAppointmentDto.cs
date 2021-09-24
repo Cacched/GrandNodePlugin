@@ -2,6 +2,8 @@
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using static Grand.Plugin.Misc.AppointmentBooking.Validators.AppointmentFormValidations;
 
 namespace Grand.Plugin.Misc.AppointmentBooking.Models
 {
@@ -10,11 +12,16 @@ namespace Grand.Plugin.Misc.AppointmentBooking.Models
         public BookAppointmentDto()
         {
             VaccinesList = new List<SelectListItem>();
+            AppointmentStatusList = new List<SelectListItem>();
         }
         public string AppointmentId { get; set; }
+
+        [Required(ErrorMessage = "Please Select a Vaccine")]
         public string VaccineId { get; set; }
         public string VaccineName { get; set; }
         public List<SelectListItem> VaccinesList { get; set; }
+
+        [Required(ErrorMessage = "Please select Doze")]
         public string Doze { get; set; }
         /// <summary>
         /// Gets or sets the Customer Guid
@@ -25,9 +32,17 @@ namespace Grand.Plugin.Misc.AppointmentBooking.Models
         /// Gets or sets the Remarks for this Appointment
         /// </summary>
         public string CustomerName { get; set; }
+
+        [Required(ErrorMessage = "Please enter Age")]
         public int Age { get; set; }
+
+        [Required(ErrorMessage = "Please enter Blood Pressure")]
         public string BloodPressure { get; set; }
+
+        [Required(ErrorMessage = "Please enter Temperature")]
         public string Temperature { get; set; }
+
+        [Required(ErrorMessage = "Please enter Weight")]
         public string Weight { get; set; }
 
         /// <summary>
@@ -37,12 +52,14 @@ namespace Grand.Plugin.Misc.AppointmentBooking.Models
         /// <summary>
         /// Gets or sets the Entry date of the Appointment
         /// </summary>
-        [GrandResourceDisplayName("Admin.Catalog.Products.Fields.Calendar.StartDate")]
         public DateTime EntryDate { get; set; }
         /// <summary>
         /// Gets or sets the  actual Appointment date that is scheduled
         /// </summary>
-        [GrandResourceDisplayName("Admin.Catalog.Products.Fields.Calendar.StartDate")]
+        [Required(ErrorMessage = "Please choose appointment date.")]
+        [Display(Name = "Appointment Date")]
+        [CustomAppointmentDate(ErrorMessage = "Appointment Date must be greater than or equal to Today's Date.")]
+        [DataType(DataType.DateTime)]
         public DateTime AppointmentDate { get; set; }
         /// <summary>
         /// Gets or sets the Status of the Appointment
@@ -52,7 +69,7 @@ namespace Grand.Plugin.Misc.AppointmentBooking.Models
         /// Gets or sets the Status Id of the Appointment
         /// </summary>
         public int StatusId { get; set; }
-
+        public List<SelectListItem> AppointmentStatusList { get; set; }
     }
 
 }
